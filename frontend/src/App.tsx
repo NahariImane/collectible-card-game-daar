@@ -408,7 +408,7 @@ export const App = () => {
         </div>
       ))
     ) : (
-      <p>Aucun NFT trouvé</p>
+      <p> Aucun NFT trouvé</p>
     )}
   </div>
 </div>
