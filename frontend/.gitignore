@@ -24,3 +24,4 @@ src/contracts.json
 *.njsproj
 *.sln
 *.sw?
+.env

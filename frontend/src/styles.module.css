@@ -1,4 +1,4 @@
-* {
+/*  * {
   box-sizing: border-box;
 }
 
@@ -22,4 +22,119 @@ body {
 
 .cell {
   background: #ddd;
+}
+*/
+/* Conteneur principal */
+.body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f7f9;
+  padding: 40px;
+  max-width: 800px;
+  margin: 0 auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Titres */
+h1 {
+  text-align: center;
+  color: #333;
+  font-size: 28px;
+  margin-bottom: 20px;
+  font-weight: 600;
+}
+
+/* Style des champs d'entrée */
+label {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 16px;
+  color: #555;
+}
+
+input[type="number"] {
+  width: 100%;
+  padding: 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-sizing: border-box;
+  font-size: 16px;
+  color: #333;
+  transition: border-color 0.3s ease;
+}
+
+input[type="number"]:focus {
+  border-color: #5b9bd5;
+  outline: none;
+}
+
+/* Boutons */
+button {
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-bottom: 15px;
+}
+
+button:hover {
+  background-color: #218838;
+}
+
+button:active {
+  background-color: #1e7e34;
+}
+
+/* Style de la grille des NFTs */
+.nftContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.nftCard {
+  width: 200px;
+  height: 300px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+.nftCard:hover {
+  transform: scale(1.05);
+}
+
+.nftCard img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-bottom: 2px solid #eee;
+}
+
+.nftCard p {
+  margin: 10px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Section des messages de statut */
+p {
+  color: #999;
+  text-align: center;
+  font-size: 16px;
+  margin-top: 20px;
 }
