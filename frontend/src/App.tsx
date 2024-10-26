@@ -1,217 +1,38 @@
-/*import { useEffect, useMemo, useRef, useState } from 'react'
-import styles from './styles.module.css'
-import * as ethereum from '@/lib/ethereum'
-import * as main from '@/lib/main'
-
-type Canceler = () => void
-const useAffect = (
-  asyncEffect: () => Promise<Canceler | void>,
-  dependencies: any[] = []
-) => {
-  const cancelerRef = useRef<Canceler | void>()
-  useEffect(() => {
-    asyncEffect()
-      .then(canceler => (cancelerRef.current = canceler))
-      .catch(error => console.warn('Uncatched error', error))
-    return () => {
-      if (cancelerRef.current) {
-        cancelerRef.current()
-        cancelerRef.current = undefined
-      }
-    }
-  }, dependencies)
-}
-
-const useWallet = () => {
-  const [details, setDetails] = useState<ethereum.Details>()
-  const [contract, setContract] = useState<main.Main>()
-  useAffect(async () => {
-    const details_ = await ethereum.connect('metamask')
-    if (!details_) return
-    setDetails(details_)
-    const contract_ = await main.init(details_)
-    if (!contract_) return
-    setContract(contract_)
-  }, [])
-  return useMemo(() => {
-    if (!details || !contract) return
-    return { details, contract }
-  }, [details, contract])
-}
-
-export const App = () => {
-  const wallet = useWallet();
-  const [nfts, setNfts] = useState<any[]>([]); // État pour stocker les NFTs
-
-  const loadNFTs = async () => {
-    if (!wallet || !wallet.contract) return;
-
-    try {
-      const nftData = [];
-      const totalNFTs = 10; // Exemple : récupérer 10 NFTs
-      for (let tokenId = 0; tokenId < totalNFTs; tokenId++) {
-        const ownerAddress = await wallet.contract.ownerOf(tokenId);
-        if (ownerAddress === wallet.details.account) {
-          const image = await wallet.contract.getCardImage(tokenId); // Hypothèse : une fonction getCardImage existe
-          nftData.push({ tokenId, image });
-        }
-      }
-      setNfts(nftData); // Mettre à jour l'état avec les NFT récupérés
-    } catch (err) {
-      console.error('Erreur lors du chargement des NFTs:', err);
-    }
-  };
-
-
-  return (
-   <div className={styles.body}>
-      <h1>Welcome to Pokémon TCG</h1>
-
-      {/* Bouton pour charger les NFTs /}
-      <button onClick={loadNFTs}>Charger mes NFTs</button>
-
-      {/* Affichage des NFTs /}
-      <div className={styles.nftContainer}>
-        {nfts.length > 0 ? (
-          nfts.map((nft, index) => (
-            <div key={index} className={styles.nftCard}>
-              <img src={nft.image} alt={`NFT ${nft.tokenId}`} />
-              <p>ID: {nft.tokenId}</p>
-            </div>
-          ))
-        ) : (
-          <p>Aucun NFT trouvé</p>
-        )}
-      </div>
-    </div>
-  )
-}
-
-*/
-
-/*import { useEffect, useState } from 'react';
-import { connect, getMainContract } from './lib/ethereum';
-import styles from './styles.module.css';
-
-export const App = () => {
-  const [wallet, setWallet] = useState<any | null>(null);
-  const [collectionId, setCollectionId] = useState<number>(0);
-  const [nfts, setNfts] = useState<any[]>([]);
-
-  // Connexion à Metamask
-  useEffect(() => {
-    const initWallet = async () => {
-      const wallet_ = await connect();
-      if (wallet_) setWallet(wallet_);
-    };
-    initWallet();
-  }, []);
-
-  // Créer une nouvelle collection
-  const createCollection = async () => {
-    const contract = getMainContract();
-    if (!contract || !wallet) return;
-
-    try {
-      const name = prompt('Nom de la collection :');
-      const cardCount = prompt('Nombre de cartes :');
-      if (name && cardCount) {
-        await contract.createCollection(name, parseInt(cardCount));
-        alert('Collection créée avec succès');
-      }
-    } catch (err) {
-      console.error('Erreur lors de la création de la collection', err);
-    }
-  };
-
-  // Mint une carte dans une collection
-  const mintCard = async () => {
-    const contract = getMainContract();
-    if (!contract || !wallet) return;
-
-    try {
-      const imgURI = prompt('Image URI de la carte :');
-      if (imgURI) {
-        await contract.mintInCollection(collectionId, wallet.account, imgURI);
-        alert('Carte mintée avec succès');
-      }
-    } catch (err) {
-      console.error('Erreur lors du mint', err);
-    }
-  };
-
-  // Charger les NFTs de l'utilisateur
-  const loadNFTs = async () => {
-    const contract = getMainContract();
-    if (!contract || !wallet) return;
-
-    try {
-      const nftData = [];
-      const totalNFTs = 10; // Nombre de NFTs à charger
-      for (let tokenId = 0; tokenId < totalNFTs; tokenId++) {
-        const ownerAddress = await contract.ownerOf(collectionId, tokenId);
-        if (ownerAddress === wallet.account) {
-          const image = await contract.getCardImage(collectionId, tokenId);
-          nftData.push({ tokenId, image });
-        }
-      }
-      setNfts(nftData);
-    } catch (err) {
-      console.error('Erreur lors du chargement des NFTs:', err);
-    }
-  };
-
-  return (
-    <div className={styles.body}>
-      <h1>Gestion de Collection et NFTs</h1>
-
-      {/* Sélectionner l'ID de la collection /}
-      <label>
-        Collection ID:
-        <input
-          type="number"
-          value={collectionId}
-          onChange={(e) => setCollectionId(Number(e.target.value))}
-        />
-      </label>
-
-      {/* Bouton pour créer une collection /}
-      <button onClick={createCollection}>Créer une Collection</button>
-
-      {/* Bouton pour mint une carte /}
-      <button onClick={mintCard}>Mint une Carte</button>
-
-      {/* Bouton pour charger les NFTs /}
-      <button onClick={loadNFTs}>Charger mes NFTs</button>
-
-      {/* Affichage des NFTs /}
-      <div className={styles.nftContainer}>
-        {nfts.length > 0 ? (
-          nfts.map((nft, index) => (
-            <div key={index} className={styles.nftCard}>
-              <img src={nft.image} alt={`NFT ${nft.tokenId}`} />
-              <p>ID: {nft.tokenId}</p>
-            </div>
-          ))
-        ) : (
-          <p>Aucun NFT trouvé</p>
-        )}
-      </div>
-    </div>
-  );
-};
-
-*/
-
-import { useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { connect, getMainContract } from './lib/ethereum';
 import styles from './styles.module.css';
 import { ethers } from 'ethers';
+import NftViewer from './components/NftViewer';
+
+interface MintedNFT {
+  tokenId: number;
+  tokenURI: string;
+  name: string; 
+  image: string; 
+  
+}
+
+
 
 export const App = () => {
   const [wallet, setWallet] = useState<any | null>(null);
   const [collectionId, setCollectionId] = useState<number>(0);
   const [nfts, setNfts] = useState<any[]>([]);
+  const [collections, setCollections] = useState<string[]>([]);
+  const [numberOfCards, setNumberOfCards] = useState<number>(1); //  nombre de cartes
+  const [imgURIs, setImgURIs] = useState<string[]>([]); // les URI des images
+  // Nouvel état pour les cartes Pokémon
+  const [pokemonCards, setPokemonCards] = useState<any[]>([]);
+  const [loadingPokemon, setLoadingPokemon] = useState<boolean>(false);
+
+  const [pokemonSets, setPokemonSets] = useState<any[]>([]);
+  const [mintedNFTs, setMintedNFTs] = useState<MintedNFT[]>([]);
+
+  const [selectedCard, setSelectedCard] = useState<any | null>(null); // Carte Pokémon sélectionnée
+
+
+
+
 
   // Connexion à Metamask
   useEffect(() => {
@@ -227,29 +48,180 @@ export const App = () => {
     initWallet();
   }, []);
 
-  // Créer une nouvelle collection
-  const createCollection = async () => {
-    const contract = getMainContract();
-    if (!contract || !wallet) {
-      alert("Veuillez vous connecter et sélectionner le bon réseau.");
-      return;
-    }
-
+   // Load Pokémon cards from the API
+   const loadPokemonCards = async () => {
+    setLoadingPokemon(true);
     try {
-      const name = prompt('Nom de la collection :');
-      const cardCount = prompt('Nombre de cartes :');
-      if (name && cardCount && !isNaN(parseInt(cardCount))) {
-        await contract.createCollection(name, parseInt(cardCount));
-        alert('Collection créée avec succès');
-      } else {
-        alert('Veuillez fournir un nom valide et un nombre de cartes.');
-      }
-    } catch (err) {
-      console.error('Erreur lors de la création de la collection', err);
-      alert('Erreur lors de la création de la collection.');
+      const response = await fetch('https://api.pokemontcg.io/v2/cards');
+      const data = await response.json();
+      setPokemonCards(data.data);
+    } catch (error) {
+      console.error('Error loading Pokémon cards:', error);
+    } finally {
+      setLoadingPokemon(false);
     }
   };
 
+  useEffect(() => {
+    loadPokemonCards();
+  }, []);
+
+
+  const loadPokemonSets = async () => {
+    try {
+      const response = await fetch('https://api.pokemontcg.io/v2/sets');
+      const data = await response.json();
+      setPokemonSets(data.data);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des sets Pokémon:', error);
+    }
+  };
+ 
+  
+
+  /// Créer une nouvelle collection
+const createCollection = async () => {
+  const contract = getMainContract();
+  if (!contract || !wallet) {
+    alert("Veuillez vous connecter et sélectionner le bon réseau.");
+    return;
+  }
+
+  try {
+    const name = prompt('Nom de la collection :');
+    const cardCount = prompt('Nombre de cartes :');
+    if (name && cardCount && !isNaN(parseInt(cardCount))) {
+      // Appeler la fonction de création de collection
+      const tx = await contract.createCollection(name, parseInt(cardCount));
+
+      // Attendre que la transaction soit minée
+      const receipt = await tx.wait();
+
+      // Inspecter l'objet receipt pour voir la structure des événements
+      console.log('Receipt:', receipt);
+
+      // Vérifier si l'événement CollectionCreated est présent
+      const event = receipt.events.find((event: { event: string; }) => event.event === "CollectionCreated");
+      if (event && event.args) {
+        const collectionId = event.args[0].toNumber(); 
+        console.log('Collection créée avec l\'ID:', collectionId);
+        setCollectionId(collectionId);  
+        alert(`Collection créée avec succès avec l'ID ${collectionId}`);
+      } else {
+        console.error('Événement CollectionCreated non trouvé dans receipt:', receipt);
+        alert('Erreur : Événement de création de collection non trouvé.');
+      }
+    } else {
+      alert('Veuillez fournir un nom valide et un nombre de cartes.');
+    }
+  } catch (err) {
+    console.error('Erreur lors de la création de la collection', err);
+    alert('Erreur lors de la création de la collection.');
+  }
+};
+
+
+ // Mint une carte Pokémon sélectionnée
+ const mintPokemonCard = async () => {
+  if (!selectedCard) {
+    alert('Veuillez sélectionner une carte Pokémon à mint.');
+    return;
+  }
+
+  const contract = getMainContract();
+  if (!contract || !wallet) {
+    alert("Veuillez vous connecter.");
+    return;
+  }
+
+  try {
+    const uri = selectedCard.images.large; // URI de l'image de la carte
+    await contract.mintInCollection(collectionId, wallet.account, uri);
+    
+    // Ajouter le NFT minté à l'état
+    const newNFT: MintedNFT = {
+      tokenId: nfts.length + 1, // Utiliser un ID basé sur la longueur actuelle de nfts
+      tokenURI: uri,
+      name: selectedCard.name,
+      image: uri
+    };
+    setNfts([...nfts, newNFT]); // Ajoute le nouveau NFT minté à l'état
+    alert("Carte Pokémon mintée avec succès");
+    setSelectedCard(null); // Réinitialiser la carte sélectionnée
+  } catch (err) {
+    console.error("Erreur lors du mint de la carte Pokémon", err);
+  }
+};
+
+
+const loadMintedNFTs = async () => {
+  const contract = getMainContract();
+  if (!contract || !wallet) return;
+
+  try {
+    const nftData: MintedNFT[] = [];
+    const ownedNFTsCount = await contract.balanceOfInCollection(collectionId, wallet.account);
+
+    if (ownedNFTsCount > 0) {
+      const ownedTokenIds = await contract.tokensOfOwnerInCollection(collectionId, wallet.account);
+      for (let tokenId of ownedTokenIds) {
+        const tokenURI = await contract.getCardImage(collectionId, tokenId);
+
+        nftData.push({ 
+          tokenId, 
+          tokenURI, 
+          name: `Carte #${tokenId}`, // Je vais utilisé un nom par défaut
+          image: tokenURI 
+        });
+      }
+    }
+
+    setNfts(nftData);
+  } catch (err) {
+    console.error('Erreur lors du chargement des NFTs mintés:', err);
+  }
+};
+
+// Ajuste la méthode pour mint plusieurs cartes Pokémon
+const mintMultiplePokemonCards = async () => {
+  const contract = getMainContract();
+  if (!contract || !wallet) {
+    alert("Veuillez vous connecter.");
+    return;
+  }
+
+  try {
+    const urisToMint = pokemonCards.slice(0, numberOfCards).map(card => card.images.large);
+    await contract.mintMultipleInCollection(collectionId, wallet.account, urisToMint);
+    alert("Cartes Pokémon mintées avec succès");
+    await loadMintedNFTs();  // Recharger les NFTs après le mint
+  } catch (err) {
+    console.error("Erreur lors du mint de plusieurs cartes Pokémon", err);
+  }
+};
+
+
+    // Fonction pour récupérer et afficher toutes les collections
+    const fetchAllCollections = async () => {
+      const contract = getMainContract();
+      if (!contract) {
+        alert("Le contrat n'est pas disponible.");
+        return;
+      }
+  
+      try {
+        const collections = await contract.getAllCollections();
+        console.log("Collections trouvées:", collections);
+        if (collections.length === 0) {
+          alert("Aucune collection n'a été trouvée.");
+        } else {
+          setCollections(collections); // Stocke les collections dans le state
+        }
+      } catch (err) {
+        console.error('Erreur lors de la récupération des collections', err);
+        alert('Erreur lors de la récupération des collections.');
+      }
+    };
 
   const checkCollectionExists = async (collectionId: number): Promise<boolean> => {
     const contract = getMainContract();
@@ -295,8 +267,8 @@ export const App = () => {
     }
   };
 
-  // Charger les NFTs de l'utilisateur
-  /*const loadNFTs = async () => {
+   // Mint plusieurs cartes dans une collection
+   const mintMultipleCards = async () => {
     const contract = getMainContract();
     if (!contract || !wallet) {
       alert("Veuillez vous connecter et sélectionner le bon réseau.");
@@ -304,39 +276,46 @@ export const App = () => {
     }
 
     try {
-      const nftData = [];
-      const totalNFTs = 10; // Nombre de NFTs à charger (à ajuster selon le besoin)
-      for (let tokenId = 0; tokenId < totalNFTs; tokenId++) {
-        const ownerAddress = await contract.ownerOf(collectionId, tokenId);
-        if (ownerAddress.toLowerCase() === wallet.account.toLowerCase()) {
-          const image = await contract.getCardImage(collectionId, tokenId);
-          nftData.push({ tokenId, image });
-        }
+      if (imgURIs.length === numberOfCards) {
+        await contract.mintMultipleInCollection(collectionId, wallet.account, imgURIs);
+        alert('Cartes mintées avec succès');
+      } else {
+        alert(`Veuillez fournir ${numberOfCards} URI d'images.`);
       }
-      setNfts(nftData);
     } catch (err) {
-      console.error('Erreur lors du chargement des NFTs:', err);
-      alert('Erreur lors du chargement des NFTs.');
+      console.error('Erreur lors du mint', err);
+      alert('Erreur lors du mint des cartes.');
     }
-  };*/
+  };
 
-/* --------------------- ca marche -------------------- 
+
+  
+
+  //------------ test pokemon -------------
   const loadNFTs = async () => {
     const contract = getMainContract();
     if (!contract || !wallet) return;
   
     try {
       const nftData = [];
-      const totalNFTs = 10; // Nombre de NFTs à charger
+      const totalNFTs = 10; 
       for (let tokenId = 0; tokenId < totalNFTs; tokenId++) {
         try {
           const ownerAddress = await contract.ownerOf(collectionId, tokenId);
           if (ownerAddress === wallet.account) {
-            const image = await contract.getCardImage(collectionId, tokenId);
-            nftData.push({ tokenId, image });
+            // Récupérer les détails de la carte
+            const [image, setName, cardId] = await contract.getCardDetails(collectionId, tokenId);
+  
+            // Convertir cardId en nombre s'il s'agit d'un BigNumber
+            nftData.push({
+              tokenId: tokenId,  // Assurez-vous que tokenId est bien un nombre
+              image: image,
+              setName: setName,
+              cardId: cardId.toString()  // Convertir BigNumber en chaîne
+            });
           }
         } catch (err) {
-          console.error(`Erreur lors de la récupération de l'owner pour le token ${tokenId}:`, err);
+          console.error(`Erreur lors de la récupération du propriétaire du token ${tokenId}:`, err);
         }
       }
       setNfts(nftData);
@@ -344,75 +323,109 @@ export const App = () => {
       console.error('Erreur lors du chargement des NFTs:', err);
     }
   };
-  */
+  
 
-  const loadNFTs = async () => {
+
+
+ 
+
+
+   // Gestion de la saisie des URI
+   const handleURIsChange = (index: number, value: string) => {
+    const newURIs = [...imgURIs];
+    newURIs[index] = value;
+    setImgURIs(newURIs);
+  };
+
+ 
+  // Fonction pour récupérer les sets Pokémon depuis l'API
+  const fetchPokemonSets = async () => {
+    try {
+      const response = await fetch('https://api.pokemontcg.io/v2/sets');
+      const data = await response.json();
+      console.log('Sets de cartes Pokémon disponibles:', data);
+      setPokemonSets(data.data);  // Stocker les sets dans le state
+    } catch (error) {
+      console.error('Erreur lors de la récupération des sets Pokémon:', error);
+    }
+  };
+
+  const addSelectedSetsToContract = async () => {
     const contract = getMainContract();
-    if (!contract || !wallet) return;
+    if (!contract || !wallet) {
+      alert("Veuillez vous connecter et sélectionner le bon réseau.");
+      return;
+    }
   
     try {
-      const nftData = [];
-      const totalNFTs = 10; // Nombre de NFTs à charger (en fonction de ta collection)
-  
-      for (let tokenId = 0; tokenId < totalNFTs; tokenId++) {
-        try {
-          // Vérifier si ce token existe avant d'essayer d'obtenir son propriétaire
-          const ownerAddress = await contract.ownerOf(collectionId, tokenId);
-          if (ownerAddress === wallet.account) {
-            const image = await contract.getCardImage(collectionId, tokenId);
-            nftData.push({ tokenId, image });
-          }
-        } catch (err) {
-          console.error(`Erreur lors de la récupération du propriétaire pour le token ${tokenId}:`, err);
-          // Si on capture une erreur (par exemple, token non existant), on continue à itérer
-        }
+      for (const set of pokemonSets) { 
+        await contract.addSet(set.id, set.name, set.total);
       }
-  
-      setNfts(nftData);
+      alert('Sets ajoutés avec succès au contrat');
     } catch (err) {
-      console.error('Erreur lors du chargement des NFTs:', err);
+      console.error('Erreur lors de l\'ajout des sets:', err);
     }
   };
   
+
+  
+
+  function handleSetSelection(e: ChangeEvent<HTMLInputElement>, set: any): void {
+    throw new Error('Function not implemented.');
+  }
 
   return (
     <div className={styles.body}>
-  <h1>Gestion de Collection et NFTs</h1>
+      <h1> Gestion de Pokémon Collection et NFTs</h1>
 
-  {/* Sélectionner l'ID de la collection */}
-  <label>
-    Collection ID:
-    <input
-      type="number"
-      value={collectionId}
-      onChange={(e) => setCollectionId(Number(e.target.value))}
-    />
-  </label>
+      {/* Sélectionner l'ID de la collection */}
+      <label>
+        Collection ID:
+        <input
+          type="number"
+          value={collectionId}
+          onChange={(e) => setCollectionId(Number(e.target.value))}
+        />
+      </label>
 
-  {/* Bouton pour créer une collection */}
-  <button onClick={createCollection}>Créer une Collection</button>
+      {/* Bouton pour créer une collection */}
+      <button onClick={createCollection}>Créer une Collection</button>
 
-  {/* Bouton pour mint une carte */}
-  <button onClick={mintCard}>Mint une Carte</button>
+      
+      <button onClick={loadMintedNFTs}>Charger vos NFTs</button>
 
-  {/* Bouton pour charger les NFTs */}
-  <button onClick={loadNFTs}>Charger mes NFTs</button>
+       <h2>Vos NFTs Mintés</h2>
+      <div className={styles.nftContainer}>
+        {nfts.map((nft) => (
+          <div key={nft.tokenId} className={styles.nftCard}>
+            <img src={nft.image} alt={`NFT ${nft.tokenId}`} />
+            <p>Nom de la carte : {nft.name}</p>
+          </div>
+        ))}
+      </div>
+     
 
-  {/* Affichage des NFTs */}
-  <div className={styles.nftContainer}>
-    {nfts.length > 0 ? (
-      nfts.map((nft, index) => (
-        <div key={index} className={styles.nftCard}>
-          <img src={nft.image} alt={`NFT ${nft.tokenId}`} />
-          <p>ID: {nft.tokenId}</p>
+      {/* Afficher les cartes Pokémon */}
+      <h2>Cartes Pokémon</h2>
+      {loadingPokemon ? (
+        <p>Chargement des cartes Pokémon...</p>
+      ) : (
+        <div className={styles.cardContainer}>
+          {pokemonCards.map((card) => (
+            <div key={card.id} className={styles.card}>
+              <img src={card.images.large} alt={card.name} />
+              <p>{card.name}</p>
+              <button onClick={() => setSelectedCard(card)}>Mint cette carte</button>
+            </div>
+          ))}
         </div>
-      ))
-    ) : (
-      <p> Aucun NFT trouvé</p>
-    )}
-  </div>
-</div>
+      )}
 
+      <button onClick={mintPokemonCard} disabled={!selectedCard}>Mint la carte sélectionnée</button>
+
+     
+    </div>
   );
+
 };
 

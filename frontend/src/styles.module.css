@@ -138,3 +138,88 @@ p {
   font-size: 16px;
   margin-top: 20px;
 }
+
+/*style des cartes pokemon */ 
+/* Conteneur principal en grille pour les cartes Pokémon */
+.cardContainer, .nftContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 20px;
+  padding: 20px;
+  justify-items: center;
+}
+
+/* Style de chaque carte Pokémon */
+.card {
+  width: 200px;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.2s;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  text-align: center;
+}
+
+.card img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 12px;
+}
+
+.card p {
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 10px;
+}
+
+.card button {
+  background-color: #28a745;
+  color: #fff;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.card button:hover {
+  background-color: #218838;
+}
+
+/* Style de chaque NFT minté */
+.nftCard {
+  width: 200px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s;
+}
+
+.nftCard img {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.nftCard p {
+  font-size: 14px;
+  color: #333;
+}
+
+/* Ajouter un effet de zoom au survol */
+.card:hover, .nftCard:hover {
+  transform: scale(1.05);
+}
+
