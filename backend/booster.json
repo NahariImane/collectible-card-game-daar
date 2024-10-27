@@ -1,0 +1,30 @@
+{
+    "boosterId": "booster2",
+    "boosterName": "Limited Edition Booster",
+    "createdAt": "2024-10-26",
+    "price": 50,
+    "isRedeemed": false,
+    "owner": "0x1234567890abcdef1234567890abcdef12345678",
+    "cards": [
+      {
+        "cardId": "xy9-10",
+        "cardName": "Squirtle",
+        "imageURI": "https://example.com/images/squirtle.png",
+        "rarity": "Legendary",
+        "set": "XY - Phantom Forces",
+        "hp": 70,
+        "type": "Water",
+        "abilities": [
+          {
+            "name": "Water Gun",
+            "description": "Does 30 damage."
+          },
+          {
+            "name": "Aqua Tail",
+            "description": "Flip a coin. If heads, this attack does 20 more damage."
+          }
+        ]
+      }
+    ]
+  }
+  

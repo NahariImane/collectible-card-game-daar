@@ -29,8 +29,10 @@ export const App = () => {
   const [mintedNFTs, setMintedNFTs] = useState<MintedNFT[]>([]);
 
   const [selectedCard, setSelectedCard] = useState<any | null>(null); // Carte Pokémon sélectionnée
+  const [boosterMessage, setBoosterMessage] = useState<string>('');
 
-
+  const [boosterName, setBoosterName] = useState<string>(''); // Nom du booster
+  const [selectedCardsForBooster, setSelectedCardsForBooster] = useState<any[]>([]); // Cartes sélectionnées pour le booster
 
 
 
@@ -65,6 +67,174 @@ export const App = () => {
   useEffect(() => {
     loadPokemonCards();
   }, []);
+
+
+  //-------------------Booster --------------------
+  // Créer un booster
+  /*const createBooster = async () => {
+    const boosterData = {
+        boosterName: "Starter Pack",
+        cards: [
+            {
+                cardId: "xy7-54",
+                cardName: "Pikachu",
+                imageURI: "https://example.com/pikachu.png",
+                rarity: "Common",
+                set: "XY - Ancient Origins",
+                hp: 60,
+                cardType: "Electric"
+            },
+            {
+                cardId: "xy7-55",
+                cardName: "Charmander",
+                imageURI: "https://example.com/charmander.png",
+                rarity: "Uncommon",
+                set: "XY - Ancient Origins",
+                hp: 50,
+                cardType: "Fire"
+            }
+        ]
+    };
+
+    try {
+        const response = await fetch(`http://localhost:3001/api/createBooster`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(boosterData)
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || 'Erreur lors de la création du booster');
+        }
+
+        setBoosterMessage('Booster créé avec succès: ' + JSON.stringify(data));
+    } catch (error) {
+        // Utilisation de la vérification de type
+        if (error instanceof Error) {
+            console.error('Erreur:', error);
+            setBoosterMessage('Erreur lors de la création du booster: ' + error.message);
+        } else {
+            // Dans le cas où l'erreur n'est pas une instance de Error
+            console.error('Erreur inconnue:', error);
+            setBoosterMessage('Erreur lors de la création du booster: une erreur inconnue s\'est produite.');
+        }
+    }
+};*/
+
+// Créer un booster basé sur les cartes sélectionnées
+/*const createBooster = async () => {
+  if (selectedCardsForBooster.length === 0) {
+    alert('Veuillez sélectionner au moins une carte pour créer un booster.');
+    return;
+  }
+
+  const boosterData = {
+    boosterName,
+    cards: selectedCardsForBooster.map(card => ({
+      cardId: card.id,
+      cardName: card.name,
+      imageURI: card.images.large,
+      rarity: card.rarity || 'Unknown',
+      set: card.set.name || 'Unknown Set',
+      hp: card.hp || 0,
+      cardType: card.types ? card.types.join(', ') : 'Unknown',
+    })),
+  };
+
+  try {
+    const response = await fetch(`http://localhost:3001/api/createBooster`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(boosterData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Erreur lors de la création du booster');
+    }
+
+    setBoosterMessage('Booster créé avec succès: ' + JSON.stringify(data));
+    // Réinitialiser après création
+    setBoosterName('');
+    setSelectedCardsForBooster([]);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Erreur:', error);
+      setBoosterMessage('Erreur lors de la création du booster: ' + error.message);
+    } else {
+      console.error('Erreur inconnue:', error);
+      setBoosterMessage('Erreur lors de la création du booster: une erreur inconnue s\'est produite.');
+    }
+  }
+};*/
+
+const createBooster = async () => {
+  if (selectedCardsForBooster.length === 0) {
+    alert('Veuillez sélectionner au moins une carte pour créer un booster.');
+    return;
+  }
+
+  const boosterData = {
+    boosterName,
+    cards: selectedCardsForBooster.map(card => ({
+      cardId: card.id,
+      cardName: card.name,
+      imageURI: card.images.large,
+      rarity: card.rarity || 'Unknown',
+      set: card.set.name || 'Unknown Set',
+      hp: card.hp || 0,
+      cardType: card.types ? card.types.join(', ') : 'Unknown',
+    })),
+  };
+
+  // Ajoute ce log pour voir les données envoyées
+  console.log('Données du booster envoyées:', boosterData);
+
+  try {
+    const response = await fetch(`http://localhost:3001/api/createBooster`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(boosterData),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || 'Erreur lors de la création du booster');
+    }
+
+    setBoosterMessage('Booster créé avec succès: ' + JSON.stringify(data));
+    setBoosterName('');
+    setSelectedCardsForBooster([]);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Erreur:', error);
+      setBoosterMessage('Erreur lors de la création du booster: ' + error.message);
+    } else {
+      console.error('Erreur inconnue:', error);
+      setBoosterMessage('Erreur lors de la création du booster: une erreur inconnue s\'est produite.');
+    }
+  }
+};
+
+
+ // Gérer la sélection des cartes pour le booster
+ const toggleCardSelection = (card: any) => {
+  if (selectedCardsForBooster.includes(card)) {
+    setSelectedCardsForBooster(selectedCardsForBooster.filter(c => c !== card));
+  } else {
+    setSelectedCardsForBooster([...selectedCardsForBooster, card]);
+  }
+};
+
+
+
 
 
   const loadPokemonSets = async () => {
@@ -374,6 +544,9 @@ const mintMultiplePokemonCards = async () => {
     throw new Error('Function not implemented.');
   }
 
+
+  
+
   return (
     <div className={styles.body}>
       <h1> Gestion de Pokémon Collection et NFTs</h1>
@@ -393,6 +566,11 @@ const mintMultiplePokemonCards = async () => {
 
       
       <button onClick={loadMintedNFTs}>Charger vos NFTs</button>
+
+
+ {/* Afficher le message de booster */}
+ {boosterMessage && <p>{boosterMessage}</p>} {/* Affiche le message */}
+
 
        <h2>Vos NFTs Mintés</h2>
       <div className={styles.nftContainer}>
@@ -415,7 +593,7 @@ const mintMultiplePokemonCards = async () => {
             <div key={card.id} className={styles.card}>
               <img src={card.images.large} alt={card.name} />
               <p>{card.name}</p>
-              <button onClick={() => setSelectedCard(card)}>Mint cette carte</button>
+              <button onClick={() => setSelectedCard(card)}>Selectionner cette carte</button>
             </div>
           ))}
         </div>
@@ -423,6 +601,22 @@ const mintMultiplePokemonCards = async () => {
 
       <button onClick={mintPokemonCard} disabled={!selectedCard}>Mint la carte sélectionnée</button>
 
+  {/* Section pour créer un Booster */}
+  <h2>Créer un Booster</h2>
+      <label>
+        Nom du Booster:
+        <input
+          type="text"
+          value={boosterName}
+          onChange={(e) => setBoosterName(e.target.value)}
+        />
+      </label>
+      <button onClick={createBooster} disabled={!boosterName || selectedCardsForBooster.length === 0}>
+        Créer le Booster
+      </button>
+
+      {/* Afficher le message de booster */}
+      {boosterMessage && <p>{boosterMessage}</p>}
      
     </div>
   );

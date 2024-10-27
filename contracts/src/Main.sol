@@ -5,6 +5,7 @@ pragma solidity ^0.8;
 import "./Collection.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "./BoosterNFT.sol";
 
 contract Main is Ownable {
 
@@ -15,18 +16,22 @@ contract Main is Ownable {
  }
 
 
-  uint private count;
-  mapping(uint => Collection) private collections;
-  mapping(uint => address) public collectionCreators; // Mapping to store the creator of each collection
+    uint private count;
+    mapping(uint => Collection) private collections;
+    mapping(uint => address) public collectionCreators; // Mapping to store the creator of each collection
 
-mapping(uint256 => PokemonSet) public pokemonSets; // Gestion des sets
+    mapping(uint256 => PokemonSet) public pokemonSets; // Gestion des sets
     uint256 public pokemonSetCount;
     uint256[] public setIds;
+    BoosterNFT private boosterNFT;
+
+
 
 
   constructor() Ownable(msg.sender) {
     count = 0;
     pokemonSetCount = 0;
+    boosterNFT = new BoosterNFT();
   }
 
 event CollectionCreated(uint256 indexed collectionId, address creator);
@@ -122,7 +127,38 @@ function mintPokemonCardInCollection(
     selectedCollection.mintPokemonCard(to, setId, name, imageURI);
 }
 
+/*function createBooster(
+    string memory boosterName,
+    BoosterNFT.PokemonCard[] memory cards
+) external onlyOwner returns (uint256) {
+    // Passer directement le tableau en mémoire
+    return boosterNFT.createBooster(boosterName, cards);
+}*/
+function createBooster(
+    string memory boosterName,
+    BoosterNFT.PokemonCard[] calldata cards
+) external onlyOwner returns (uint256) {
+    uint256 boosterId = boosterNFT.createBooster(boosterName);
 
+    // Ajouter les cartes une par une
+    for (uint256 i = 0; i < cards.length; i++) {
+        boosterNFT.addCardToBooster(
+            boosterId,
+            cards[i].setId,
+            cards[i].name,
+            cards[i].imageURI
+        );
+    }
+
+    return boosterId;
+}
+
+
+
+
+    function getBooster(uint256 boosterId) public view returns (BoosterNFT.Booster memory) {
+        return boosterNFT.getBooster(boosterId);
+    }
 }
 
 

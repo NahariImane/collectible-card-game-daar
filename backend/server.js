@@ -82,6 +82,54 @@ const mainAbi = [
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": true,
+        "internalType": "uint256",
+        "name": "setId",
+        "type": "uint256"
+      },
+      {
+        "indexed": false,
+        "internalType": "string",
+        "name": "setName",
+        "type": "string"
+      },
+      {
+        "indexed": false,
+        "internalType": "uint256",
+        "name": "cardCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "PokemonSetAdded",
+    "type": "event"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "setId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_setName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_cardCount",
+        "type": "uint256"
+      }
+    ],
+    "name": "addSet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "uint256",
@@ -128,6 +176,47 @@ const mainAbi = [
     "inputs": [
       {
         "internalType": "string",
+        "name": "boosterName",
+        "type": "string"
+      },
+      {
+        "components": [
+          {
+            "internalType": "uint256",
+            "name": "setId",
+            "type": "uint256"
+          },
+          {
+            "internalType": "string",
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "internalType": "string",
+            "name": "imageURI",
+            "type": "string"
+          }
+        ],
+        "internalType": "struct BoosterNFT.PokemonCard[]",
+        "name": "cards",
+        "type": "tuple[]"
+      }
+    ],
+    "name": "createBooster",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "string",
         "name": "name",
         "type": "string"
       },
@@ -156,6 +245,54 @@ const mainAbi = [
         "internalType": "address[]",
         "name": "",
         "type": "address[]"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "boosterId",
+        "type": "uint256"
+      }
+    ],
+    "name": "getBooster",
+    "outputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "boosterName",
+            "type": "string"
+          },
+          {
+            "components": [
+              {
+                "internalType": "uint256",
+                "name": "setId",
+                "type": "uint256"
+              },
+              {
+                "internalType": "string",
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "internalType": "string",
+                "name": "imageURI",
+                "type": "string"
+              }
+            ],
+            "internalType": "struct BoosterNFT.PokemonCard[]",
+            "name": "cards",
+            "type": "tuple[]"
+          }
+        ],
+        "internalType": "struct BoosterNFT.Booster",
+        "name": "",
+        "type": "tuple"
       }
     ],
     "stateMutability": "view",
@@ -251,6 +388,39 @@ const mainAbi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "collectionId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "setId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "imageURI",
+        "type": "string"
+      }
+    ],
+    "name": "mintPokemonCardInCollection",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "owner",
     "outputs": [
@@ -289,9 +459,65 @@ const mainAbi = [
   },
   {
     "inputs": [],
+    "name": "pokemonSetCount",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "pokemonSets",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "setName",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "cardCount",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
     "name": "renounceOwnership",
     "outputs": [],
     "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "setIds",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -678,6 +904,35 @@ const collectionAbi = [
         "type": "uint256"
       }
     ],
+    "name": "getCardDetails",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "tokenId",
+        "type": "uint256"
+      }
+    ],
     "name": "getCardImage",
     "outputs": [
       {
@@ -750,6 +1005,34 @@ const collectionAbi = [
     "type": "function"
   },
   {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "to",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_setId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "_name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "_imageURI",
+        "type": "string"
+      }
+    ],
+    "name": "mintPokemonCard",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
     "inputs": [],
     "name": "name",
     "outputs": [
@@ -802,6 +1085,35 @@ const collectionAbi = [
         "internalType": "address",
         "name": "",
         "type": "address"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "name": "pokemonCards",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "setId",
+        "type": "uint256"
+      },
+      {
+        "internalType": "string",
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "imageURI",
+        "type": "string"
       }
     ],
     "stateMutability": "view",
@@ -1203,6 +1515,26 @@ app.get('/api/nft/:collectionId/:tokenId', async (req, res) => {
 });
 
 
+// Route pour créer un booster
+app.post('/api/createBooster', async (req, res) => {
+  const { boosterName, cards } = req.body;
+
+  if (!boosterName || !cards || !Array.isArray(cards) || cards.length === 0) {
+    return res.status(400).json({ error: 'boosterName et une liste de cards sont requis' });
+  }
+
+  try {
+    const signer = provider.getSigner();
+    const contractWithSigner = mainContract.connect(signer);
+    const tx = await contractWithSigner.createBooster(boosterName, cards);
+    await tx.wait();
+
+    res.json({ message: 'Booster créé avec succès', transactionHash: tx.hash });
+  } catch (error) {
+    console.error('Erreur lors de la création du booster:', error);
+    res.status(500).json({ error: 'Erreur lors de la création du booster', details: error.message });
+  }
+});
 
 // Démarrer le serveur
 app.listen(PORT, () => {
